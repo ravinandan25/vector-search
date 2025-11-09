@@ -1,8 +1,11 @@
+from dotenv import load_dotenv
 import requests, os
 from tqdm import tqdm
 
+load_dotenv()
+
 UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
-SEARCH_QUERY = "food"
+SEARCH_QUERY = "cars"
 OUT_DIR = "unsplash_images"
 os.makedirs(OUT_DIR, exist_ok=True)
 
