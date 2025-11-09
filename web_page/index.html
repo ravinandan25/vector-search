@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Image Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Materialize CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        font-family: "Roboto", sans-serif;
+        background: linear-gradient(135deg, #1565c0, #42a5f5);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 80px 20px 40px;
+      }
+
+      .hero h2 {
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-size: 2.4rem;
+      }
+
+      .hero p {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 18px;
+        margin-bottom: 40px;
+      }
+
+      .search-container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        width: 90%;
+        max-width: 700px;
+        padding: 10px 20px;
+        margin: 0 auto;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .search-container:focus-within {
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .search-icon {
+        color: #fff;
+        font-size: 26px;
+        opacity: 0.95;
+        margin-right: 12px;
+      }
+
+      .search-container input {
+        border: none;
+        outline: none;
+        background: transparent;
+        color: white;
+        flex: 1;
+        font-size: 18px;
+        padding: 10px;
+        margin-right: 12px !important;
+      }
+
+      .search-container input::placeholder {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .search-btn {
+        background: white;
+        color: #1976d2;
+        border: none;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      }
+
+      .search-btn:hover {
+        transform: scale(1.07);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      }
+
+      /* === SLIDER SECTION === */
+      .slider-section {
+        margin-top: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px 30px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 700px;
+      }
+
+      .slider-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      input[type="range"] {
+        accent-color: #ffca28;
+      }
+
+      .results-section {
+        background: #f8f9fb;
+        border-radius: 30px 30px 0 0;
+        margin-top: 60px;
+        padding: 50px 30px;
+        width: 100%;
+        color: #333;
+        flex-grow: 1;
+        min-height: 40vh;
+      }
+
+      .results {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 25px;
+      }
+
+      .card {
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+      }
+
+      .card-image img {
+        height: 220px;
+        width: 100%;
+        object-fit: cover;
+      }
+
+      .card-content {
+        padding: 16px;
+      }
+
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 40px;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .shimmer {
+        width: 250px;
+        height: 200px;
+        background: linear-gradient(
+          90deg,
+          #f0f0f0 25%,
+          #e0e0e0 50%,
+          #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite;
+        border-radius: 12px;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <section class="hero">
+      <h2>🔍 Smart Image Search</h2>
+      <p>Find visually similar images instantly using AI-powered search</p>
+
+      <div class="search-container">
+        <i class="material-icons search-icon">search</i>
+        <input
+          id="query"
+          type="text"
+          placeholder="Try 'red motorbike', 'snow mountain', 'beach sunset'"
+        />
+        <button class="search-btn" onclick="search()">
+          <i class="material-icons">arrow_forward</i>
+        </button>
+      </div>
+
+      <!-- Sliders for Weight Control -->
+      <div class="slider-section">
+        <div class="slider-label">
+          <span>🧠 Text Weight: <b id="textValue">0.7</b></span>
+          <span>🖼️ Image Weight: <b id="imageValue">0.3</b></span>
+        </div>
+        <input
+          type="range"
+          id="textWeight"
+          min="0"
+          max="1"
+          step="0.1"
+          value="0.7"
+          oninput="updateWeights(this.value)"
+        />
+      </div>
+    </section>
+
+    <section class="results-section">
+      <div id="loading" class="loading" style="display: none">
+        <div class="shimmer"></div>
+        <div class="shimmer"></div>
+        <div class="shimmer"></div>
+      </div>
+
+      <div id="results" class="results"></div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+      function updateWeights(val) {
+        const t = parseFloat(val);
+        const i = (1 - t).toFixed(1);
+        document.getElementById("textValue").textContent = t.toFixed(1);
+        document.getElementById("imageValue").textContent = i;
+        document.getElementById("textWeight").dataset.imageWeight = i;
+      }
+
+      async function search() {
+        const query = document.getElementById("query").value.trim();
+        const textWeight = parseFloat(document.getElementById("textValue").textContent);
+        const imageWeight = parseFloat(document.getElementById("imageValue").textContent);
+
+        const resultsDiv = document.getElementById("results");
+        const loadingDiv = document.getElementById("loading");
+        resultsDiv.innerHTML = "";
+
+        if (!query) {
+          M.toast({ html: "Please enter a search query" });
+          return;
+        }
+
+        loadingDiv.style.display = "flex";
+
+        try {
+          const res = await fetch(
+            `http://localhost:8000/search?q=${encodeURIComponent(query)}&text_weight=${textWeight}&image_weight=${imageWeight}`
+          );
+          const data = await res.json();
+
+          resultsDiv.innerHTML = "";
+          loadingDiv.style.display = "none";
+
+          if (!data.results || data.results.length === 0) {
+            resultsDiv.innerHTML =
+              '<p class="center-align grey-text">No results found.</p>';
+            return;
+          }
+
+          data.results.forEach((r) => {
+            const card = `
+            <div class="card hoverable">
+              <div class="card-image">
+                <img src="${r.image_url}" alt="${r.caption}">
+              </div>
+              <div class="card-content">
+                <p><b>${r.caption}</b></p>
+                <p class="grey-text">Similarity: ${(r.similarity * 100).toFixed(
+                  1
+                )}%</p>
+              </div>
+            </div>`;
+            resultsDiv.innerHTML += card;
+          });
+        } catch (err) {
+          loadingDiv.style.display = "none";
+          M.toast({ html: "Error fetching results" });
+          console.error(err);
+        }
+      }
+    </script>
+  </body>
+</html>
