@@ -112,6 +112,6 @@ Ravinandan
 
 ## 📜 License
 
-MIT License © 2025 Ravinandan Bhardwaj
+MIT License © 2025 Ravinandan
 
 
